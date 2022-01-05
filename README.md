@@ -11,11 +11,11 @@ Monitoring Dell PowerEdge server temperature and control fan speed using IPMI co
 - macOS
 
 ## Usage
-enable IPMI on LAN in iDRAC when you using 14G server.  
+Enable IPMI on LAN in iDRAC when you using 14G server.  
 14代服务器需要在 iDRAC 中手动启用 IPMI on LAN.
 
 
-install ipmitool.  
+Install ipmitool.  
 安装 ipmitool.
 
 
