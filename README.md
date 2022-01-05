@@ -34,7 +34,7 @@ Set iDRAC password to ENV.
 export IPMIPW=<iDRAC password>
 ```
 
-```bash
+```
 Usage: poweredge_ipmi.sh COMMAND HOST [SPEED]
 
   COMMAND:
@@ -69,4 +69,12 @@ RestartSec=10
 
 [Install]
 WantedBy=multi-user.target
+```
+
+Enable and start service.  
+启用和运行服务.
+```bash
+systemctl daemon-reload
+systemctl enable poweredge_fan
+systemctl start poweredge_fan
 ```

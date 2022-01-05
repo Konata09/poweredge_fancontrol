@@ -24,7 +24,7 @@ if [[ "$PLATFORM" == "linux" ]]; then
 fi
 
 # IPMI Setting
-IPMIHOST=("172.31.161.3" "172.31.161.40" "172.31.161.41" "172.31.161.42" "172.31.161.48" "172.31.161.49" "172.31.161.50" "172.31.161.51" "172.31.161.52" "172.31.161.53")   # array of iDRAC IP Address
+IPMIHOST=("172.31.0.1" "172.31.0.2")   # array of iDRAC IP Address
 IPMIUSER=root     # iDRAC Username
 IPMIPW=$IPMIPW    # iDRAC Password
 INTERVAL=30       # Sleep seconds between Check
