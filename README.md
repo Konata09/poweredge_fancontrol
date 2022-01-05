@@ -11,9 +11,16 @@ Monitoring Dell PowerEdge server temperature and control fan speed using IPMI co
 - macOS
 
 ## Usage
+enable IPMI on LAN in iDRAC when you using 14G server.  
+14代服务器需要在 iDRAC 中手动启用 IPMI on LAN.
+
+
+install ipmitool.  
+安装 ipmitool.
+
 
 Edit script and set server IP address.  
-在脚本中设置服务器 IP 地址.
+在脚本中设置服务器 IP 地址.  
 
 ```bash
 IPMIHOST=("172.31.0.1" "172.31.0.2")   # array of iDRAC IP Address
@@ -29,7 +36,8 @@ MIDFAN=10         # Fan Speed when CPU Temp Higher than LOWTEMP but Lower than H
 ### Running in Terminal
 
 Set iDRAC password to ENV.  
-在环境变量中设置 iDRAC 密码.
+在环境变量中设置 iDRAC 密码.  
+
 ```bash
 export IPMIPW=<iDRAC password>
 ```
@@ -54,7 +62,8 @@ Usage: poweredge_ipmi.sh COMMAND HOST [SPEED]
 vim /lib/systemd/system/poweredge_fan.service
 ```
 Add following content:  
-添加以下内容：
+添加以下内容：  
+
 ```ini
 [Unit]
 Description=PowerEdge Fan Control
@@ -72,7 +81,8 @@ WantedBy=multi-user.target
 ```
 
 Enable and start service.  
-启用和运行服务.
+启用和运行服务.  
+
 ```bash
 systemctl daemon-reload
 systemctl enable poweredge_fan
