@@ -24,12 +24,14 @@ if [[ "$PLATFORM" == "linux" ]]; then
 fi
 
 # IPMI Setting
-IPMIHOST=("172.31.161.1" "172.31.161.11")   # array of iDRAC IP Address
+IPMIHOST=("172.31.161.3" "172.31.161.40" "172.31.161.41" "172.31.161.42" "172.31.161.48" "172.31.161.49" "172.31.161.50" "172.31.161.51" "172.31.161.52" "172.31.161.53")   # array of iDRAC IP Address
 IPMIUSER=root     # iDRAC Username
 IPMIPW=$IPMIPW    # iDRAC Password
 INTERVAL=30       # Sleep seconds between Check
 HIGHTEMP=85       # Fan Will Controlled by iDRAC when CPU Temp Higher than HIGHTEMP
-LOWTEMP=65        # Fan Will at very Low Speed when CPU Temp Lower than LOWTEMP
+LOWTEMP=65        # Fan Will at LOWFAN when CPU Temp Lower than LOWTEMP
+LOWFAN=5          # Fan Speed when CPU Temp Lower than LOWTEMP
+MIDFAN=10         # Fan Speed when CPU Temp Higher than LOWTEMP but Lower than HIGHTEMP
 
 # 1  - 1%  - 1800  RPM
 # 5  - 5%  - 2400  RPM
@@ -47,21 +49,19 @@ LOWTEMP=65        # Fan Will at very Low Speed when CPU Temp Lower than LOWTEMP
 # 50 - 80%
 # 64 - 100%
 
-# iDRAC control fan speed
 # $1=Host
 function SetFanAuto()
 {
   echo "Setting $1 fan speed to iDRAC controlled "
-  ipmitool -I lanplus -H $1 -U $IPMIUSER -P $IPMIPW raw 0x30 0x30 0x01 0x01
+  ipmitool -I lanplus -H $1 -U $IPMIUSER -P $IPMIPW raw 0x30 0x30 0x01 0x01 > /dev/null
 }
 
 # $1=Host $2=Level
 function SetFanLevel() {
-  local LEVEL
-  LEVEL=$(printf '0x%x' $2)
+  local LEVEL=$(printf '0x%x' $2)
   echo "Setting $1 fan speed to $2%"
-  ipmitool -I lanplus -H $1 -U $IPMIUSER -P $IPMIPW raw 0x30 0x30 0x01 0x00
-  ipmitool -I lanplus -H $1 -U $IPMIUSER -P $IPMIPW raw 0x30 0x30 0x02 0xff $LEVEL
+  ipmitool -I lanplus -H $1 -U $IPMIUSER -P $IPMIPW raw 0x30 0x30 0x01 0x00 > /dev/null
+  ipmitool -I lanplus -H $1 -U $IPMIUSER -P $IPMIPW raw 0x30 0x30 0x02 0xff $LEVEL > /dev/null
 }
 
 # $1=Host
@@ -80,26 +80,33 @@ function GetCPUMaxTemp() {
   local CPU1TEMP
   local CPU2TEMP
   CPU1TEMP=$(ipmitool -I lanplus -H $1 -U $IPMIUSER -P $IPMIPW sdr type temperature | grep 0Eh | cut -d \| -f5 | $GREP -o '\d\d')
+  if [[ -z $CPU1TEMP ]]; then
+    CPU1TEMP=$(ipmitool -I lanplus -H $1 -U $IPMIUSER -P $IPMIPW sdr type temperature | grep 01h | cut -d \| -f5 | $GREP -o '\d\d')
+  fi
   CPU2TEMP=$(ipmitool -I lanplus -H $1 -U $IPMIUSER -P $IPMIPW sdr type temperature | grep 0Fh | cut -d \| -f5 | $GREP -o '\d\d')
+  if [[ -z $CPU2TEMP ]]; then
+    CPU2TEMP=$(ipmitool -I lanplus -H $1 -U $IPMIUSER -P $IPMIPW sdr type temperature | grep 02h | cut -d \| -f5 | $GREP -o '\d\d')
+  fi
 
-  if [[ $CPU1TEMP -ge $CPU2TEMP ]]; then
-    return "$CPU1TEMP"
+  if [[ -z $CPU2TEMP ]]; then
+    echo "$CPU1TEMP"
+  elif [[ $CPU1TEMP -ge $CPU2TEMP ]]; then
+    echo "$CPU1TEMP"
   else
-    return "$CPU2TEMP"
+    echo "$CPU2TEMP"
   fi
 }
 
 # $1=Host
 function SetFanByCPUTemp() {
-  local CPUTemp
-  CPUTemp=$(GetCPUMaxTemp "$1")
+  local CPUTemp=$(GetCPUMaxTemp "$1")
   echo "$1 Current CPU Temp: $CPUTemp °C"
   if [[ $CPUTemp > $HIGHTEMP ]]; then
     SetFanAuto $1
-  elif [[ $CPUTemp < $LOWTEMP ]]; then
-    SetFanLevel $1 5
+  elif [[ ! $CPUTemp > $LOWTEMP ]]; then
+    SetFanLevel $1 $LOWFAN
   else
-    SetFanLevel $1 10
+    SetFanLevel $1 $MIDFAN
   fi
 }
 
