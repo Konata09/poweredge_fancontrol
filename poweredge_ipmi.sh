@@ -24,14 +24,16 @@ if [[ "$PLATFORM" == "linux" ]]; then
 fi
 
 # IPMI Setting
-IPMIHOST=("172.31.0.1" "172.31.0.2")   # array of iDRAC IP Address
+IPMIHOST=("192.168.12.10" "192.168.12.11")   # array of iDRAC IP Address
 IPMIUSER=root     # iDRAC Username
 IPMIPW=$IPMIPW    # iDRAC Password
 INTERVAL=30       # Sleep seconds between Check
 HIGHTEMP=85       # Fan Will Controlled by iDRAC when CPU Temp Higher than HIGHTEMP
-LOWTEMP=65        # Fan Will at LOWFAN when CPU Temp Lower than LOWTEMP
-LOWFAN=5          # Fan Speed when CPU Temp Lower than LOWTEMP
+LOWTEMP=65        # Fan Will at LOWFAN when CPU Higher than STOPTEMP but Temp Lower than LOWTEMP
+STOPTEMP=55       # Fan Will at 1 percent PMW when CPU Temp Lower than STOPTEMP
 MIDFAN=10         # Fan Speed when CPU Temp Higher than LOWTEMP but Lower than HIGHTEMP
+LOWFAN=5          # Fan Speed when CPU Temp Higher than STOPTEMP but Lower than LOWTEMP
+STOPFAN=1         # Fan Speed when CPU Temp Lower than STOPTEMP
 
 # 1  - 1%  - 1800  RPM
 # 5  - 5%  - 2400  RPM
@@ -103,10 +105,12 @@ function SetFanByCPUTemp() {
   echo "$1 Current CPU Temp: $CPUTemp °C"
   if [[ $CPUTemp > $HIGHTEMP ]]; then
     SetFanAuto $1
-  elif [[ ! $CPUTemp > $LOWTEMP ]]; then
-    SetFanLevel $1 $LOWFAN
-  else
+  elif [[ $CPUTemp > $LOWTEMP ]]; then
     SetFanLevel $1 $MIDFAN
+  elif [[ $CPUTemp > $STOPTEMP ]]; then
+    SetFanLevel $1 $LOWTEMP
+  else
+    SetFanLevel $1 $STOPFAN
   fi
 }
 
