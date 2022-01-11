@@ -108,7 +108,7 @@ function SetFanByCPUTemp() {
   elif [[ $CPUTemp > $LOWTEMP ]]; then
     SetFanLevel $1 $MIDFAN
   elif [[ $CPUTemp > $STOPTEMP ]]; then
-    SetFanLevel $1 $LOWTEMP
+    SetFanLevel $1 $LOWFAN
   else
     SetFanLevel $1 $STOPFAN
   fi
