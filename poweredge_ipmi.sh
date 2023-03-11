@@ -24,16 +24,28 @@ if [[ "$PLATFORM" == "linux" ]]; then
 fi
 
 # IPMI Setting
-IPMIHOST=("192.168.12.10" "192.168.12.11")   # array of iDRAC IP Address
+IPMIHOST=("192.168.10.12" "192.168.10.13" "192.168.11.2")   # array of iDRAC IP Address
 IPMIUSER=root     # iDRAC Username
 IPMIPW=$IPMIPW    # iDRAC Password
-INTERVAL=30       # Sleep seconds between Check
-HIGHTEMP=85       # Fan Will Controlled by iDRAC when CPU Temp Higher than HIGHTEMP
-LOWTEMP=65        # Fan Will at LOWFAN when CPU Higher than STOPTEMP but Temp Lower than LOWTEMP
-STOPTEMP=55       # Fan Will at 1 percent PMW when CPU Temp Lower than STOPTEMP
-MIDFAN=10         # Fan Speed when CPU Temp Higher than LOWTEMP but Lower than HIGHTEMP
-LOWFAN=5          # Fan Speed when CPU Temp Higher than STOPTEMP but Lower than LOWTEMP
-STOPFAN=1         # Fan Speed when CPU Temp Lower than STOPTEMP
+INTERVAL=45       # Sleep seconds between Check
+TEMP_AUTO=86
+TEMP_1=59
+TEMP_2=62
+TEMP_3=65
+TEMP_4=68
+TEMP_5=71
+TEMP_6=74
+TEMP_7=77
+TEMP_8=80
+FAN_1=1
+FAN_2=5
+FAN_3=9
+FAN_4=13
+FAN_5=17
+FAN_6=21
+FAN_7=25
+FAN_8=29
+FAN_9=33
 
 # 1  - 1%  - 1800  RPM
 # 5  - 5%  - 2400  RPM
@@ -103,14 +115,26 @@ function GetCPUMaxTemp() {
 function SetFanByCPUTemp() {
   local CPUTemp=$(GetCPUMaxTemp "$1")
   echo "$1 Current CPU Temp: $CPUTemp °C"
-  if [[ $CPUTemp > $HIGHTEMP ]]; then
+  if [[ $CPUTemp > $TEMP_AUTO ]]; then
     SetFanAuto $1
-  elif [[ $CPUTemp > $LOWTEMP ]]; then
-    SetFanLevel $1 $MIDFAN
-  elif [[ $CPUTemp > $STOPTEMP ]]; then
-    SetFanLevel $1 $LOWFAN
+  elif [[ $CPUTemp > $TEMP_8 ]]; then
+    SetFanLevel $1 $FAN_9
+  elif [[ $CPUTemp > $TEMP_7 ]]; then
+    SetFanLevel $1 $FAN_8
+  elif [[ $CPUTemp > $TEMP_6 ]]; then
+    SetFanLevel $1 $FAN_7
+  elif [[ $CPUTemp > $TEMP_5 ]]; then
+    SetFanLevel $1 $FAN_6
+  elif [[ $CPUTemp > $TEMP_4 ]]; then
+    SetFanLevel $1 $FAN_5
+  elif [[ $CPUTemp > $TEMP_3 ]]; then
+    SetFanLevel $1 $FAN_4
+  elif [[ $CPUTemp > $TEMP_2 ]]; then
+    SetFanLevel $1 $FAN_3
+  elif [[ $CPUTemp > $TEMP_1 ]]; then
+    SetFanLevel $1 $FAN_2
   else
-    SetFanLevel $1 $STOPFAN
+    SetFanLevel $1 $FAN_1
   fi
 }
 
