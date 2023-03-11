@@ -2,12 +2,12 @@
 Monitoring Dell PowerEdge server temperature and control fan speed using IPMI command.  
 使用 IPMI 监控 DELL PowerEdge 服务器温度并自动控制风扇转速.
 
-## Support Server
+## Supported Server
 - Dell PowerEdge 13G Server (R530 R730 tested)
 - Dell EMC PowerEdge 14G Server and iDRAC < 3.34.34.34 (R740 with iDRAC 3.21.23.22 tested)
 
-## Support Running Environment
-- GUN Linux
+## Supported Running Environment
+- GNU Linux
 - macOS
 
 ## Usage
@@ -26,11 +26,26 @@ Edit script and set server IP address.
 IPMIHOST=("172.31.0.1" "172.31.0.2")   # array of iDRAC IP Address
 IPMIUSER=root     # iDRAC Username
 IPMIPW=$IPMIPW    # iDRAC Password
-INTERVAL=30       # Sleep seconds between Check
-HIGHTEMP=85       # Fan Will Controlled by iDRAC when CPU Temp Higher than HIGHTEMP
-LOWTEMP=65        # Fan Will at LOWFAN when CPU Temp Lower than LOWTEMP
-LOWFAN=5          # Fan Speed when CPU Temp Lower than LOWTEMP
-MIDFAN=10         # Fan Speed when CPU Temp Higher than LOWTEMP but Lower than HIGHTEMP
+INTERVAL=45       # Sleep seconds between Check
+TEMP_AUTO=86
+# Default fan profile
+TEMP_1=59
+TEMP_2=62
+TEMP_3=65
+TEMP_4=68
+TEMP_5=71
+TEMP_6=74
+TEMP_7=77
+TEMP_8=80
+FAN_1=1
+FAN_2=5
+FAN_3=9
+FAN_4=13
+FAN_5=17
+FAN_6=21
+FAN_7=25
+FAN_8=29
+FAN_9=33
 ```
 
 ### Running in Terminal
