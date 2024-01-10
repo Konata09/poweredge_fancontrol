@@ -24,10 +24,10 @@ if [[ "$PLATFORM" == "linux" ]]; then
 fi
 
 # IPMI Setting
-IPMIHOST=("192.168.10.12" "192.168.10.13" "192.168.11.2")   # array of iDRAC IP Address
+IPMIHOST=("192.168.10.12" "192.168.10.13")   # array of iDRAC IP Address
 IPMIUSER=root     # iDRAC Username
 IPMIPW=$IPMIPW    # iDRAC Password
-INTERVAL=45       # Sleep seconds between Check
+INTERVAL=90       # Sleep seconds between Check
 TEMP_AUTO=86
 TEMP_1=59
 TEMP_2=62
