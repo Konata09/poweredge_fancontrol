@@ -27,7 +27,7 @@ fi
 IPMIHOST=("192.168.10.14")   # array of BMC IP Address
 IPMIUSER=ADMIN     # BMC Username
 IPMIPW=$IPMIPW    # BMC Password
-INTERVAL=30       # Sleep seconds between check
+INTERVAL=30       # Sleep seconds between Check
 TEMP_1=59
 TEMP_2=62
 TEMP_3=65
@@ -200,3 +200,4 @@ elif [[ "$1" == fan ]]; then
 else
   PrintUsage
 fi
+
