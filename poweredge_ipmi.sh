@@ -24,10 +24,11 @@ if [[ "$PLATFORM" == "linux" ]]; then
 fi
 
 # IPMI Setting
-IPMIHOST=("192.168.10.12" "192.168.10.13")   # array of iDRAC IP Address
-IPMIUSER=root     # iDRAC Username
-IPMIPW=$IPMIPW    # iDRAC Password
-INTERVAL=90       # Sleep seconds between Check
+IPMIHOST=("192.168.10.12" "192.168.10.13")  # array of iDRAC IP Address
+IPMIUSER=root                               # iDRAC Username
+IPMIPW=$IPMIPW                              # iDRAC Password
+SNMPCOMMUNITY=$SNMPCOMMUNITY                # SNMP v2 Community
+INTERVAL=90                                 # Sleep seconds between Check
 TEMP_AUTO=86
 TEMP_1=59
 TEMP_2=62
@@ -93,21 +94,24 @@ function GetTemp() {
 function GetCPUMaxTemp() {
   local CPU1TEMP
   local CPU2TEMP
-  CPU1TEMP=$(ipmitool -I lanplus -H $1 -U $IPMIUSER -P $IPMIPW sdr type temperature | grep 0Eh | cut -d \| -f5 | $GREP -o '\d\d')
-  if [[ -z $CPU1TEMP ]]; then
-    CPU1TEMP=$(ipmitool -I lanplus -H $1 -U $IPMIUSER -P $IPMIPW sdr type temperature | grep 01h | cut -d \| -f5 | $GREP -o '\d\d')
-  fi
-  CPU2TEMP=$(ipmitool -I lanplus -H $1 -U $IPMIUSER -P $IPMIPW sdr type temperature | grep 0Fh | cut -d \| -f5 | $GREP -o '\d\d')
-  if [[ -z $CPU2TEMP ]]; then
-    CPU2TEMP=$(ipmitool -I lanplus -H $1 -U $IPMIUSER -P $IPMIPW sdr type temperature | grep 02h | cut -d \| -f5 | $GREP -o '\d\d')
-  fi
+  local CPU1OID=$(snmpwalk -v2c -c $SNMPCOMMUNITY $1 1.3.6.1.4.1.674.10892.5.4.700.20.1.8 | grep CPU1 | cut -d = -f1)
+  local CPU1INDEX=${CPU1OID: -2}
+  local CPU2INDEX=$(($CPU1INDEX + 1))
+  CPU1TEMP=$(snmpget -v2c -Ov -c $SNMPCOMMUNITY $1 1.3.6.1.4.1.674.10892.5.4.700.20.1.6.1.$CPU1INDEX | $GREP -o '\d+')
+#  if [[ -z $CPU1TEMP ]]; then
+#    CPU1TEMP=$(ipmitool -I lanplus -H $1 -U $IPMIUSER -P $IPMIPW sdr type temperature | grep 01h | cut -d \| -f5 | $GREP -o '\d\d')
+#  fi
+  CPU2TEMP=$(snmpget -v2c -Ov -c $SNMPCOMMUNITY $1 1.3.6.1.4.1.674.10892.5.4.700.20.1.6.1.$CPU2INDEX | $GREP -o '\d+')
+  #  if [[ -z $CPU2TEMP ]]; then
+#    CPU2TEMP=$(ipmitool -I lanplus -H $1 -U $IPMIUSER -P $IPMIPW sdr type temperature | grep 02h | cut -d \| -f5 | $GREP -o '\d\d')
+#  fi
 
   if [[ -z $CPU2TEMP ]]; then
-    echo "$CPU1TEMP"
+    echo "$(($CPU1TEMP / 10))"
   elif [[ $CPU1TEMP -ge $CPU2TEMP ]]; then
-    echo "$CPU1TEMP"
+    echo "$(($CPU1TEMP / 10))"
   else
-    echo "$CPU2TEMP"
+    echo "$(($CPU2TEMP / 10))"
   fi
 }
 
