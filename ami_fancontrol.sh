@@ -81,7 +81,7 @@ function SetFanAuto() {
   local RES=$(curl -s -k "https://$1/api/settings/FanModes" -H "Content-Type: application/json" -H "Cookie: QSESSIONID=$QSESSIONID" -H "X-CSRFTOKEN: $CSRFTOKEN" --data-raw "{\"CompletionCode\":0,\"fan_mode\":\"0\",\"fans_speed\":\"-1\"}")
   echo "Result: $RES"
 
-  if [[ $RES =~ 'Invalid Authentication' ]] && [[ -z $2 ]]; then
+  if [[ $RES =~ 'Invalid Authentication' ]] && [[ -z "$2" ]]; then
     echo "Need login to $1"
     RefreshToken $1
     SetFanAuto $1 true
@@ -94,7 +94,7 @@ function SetFanLevel() {
   local RES=$(curl -s -k "https://$1/api/settings/FanModes" -H "Content-Type: application/json" -H "Cookie: QSESSIONID=$QSESSIONID" -H "X-CSRFTOKEN: $CSRFTOKEN" --data-raw "{\"CompletionCode\":0,\"fan_mode\":\"1\",\"fans_speed\":\"$2\"}")
   echo "Result: $RES"
 
-  if [[ $RES =~ 'Invalid Authentication' ]] && [[ -z $2 ]]; then
+  if [[ $RES =~ 'Invalid Authentication' ]] && [[ -z "$3" ]]; then
     echo "Need login to $1"
     RefreshToken $1
     SetFanAuto $1 $2 true
