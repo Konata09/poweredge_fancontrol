@@ -97,7 +97,7 @@ function SetFanLevel() {
   if [[ $RES =~ 'Invalid Authentication' ]] && [[ -z "$3" ]]; then
     echo "Need login to $1"
     RefreshToken $1
-    SetFanAuto $1 $2 true
+    SetFanLevel $1 $2 true
   fi
 }
 
