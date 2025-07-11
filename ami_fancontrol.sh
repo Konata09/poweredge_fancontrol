@@ -123,7 +123,9 @@ function GetCPUMaxTemp() {
 function SetFanByCPUTemp() {
   local CPUTemp=$(GetCPUMaxTemp "$1")
   echo "$1 Current CPU Temp: $CPUTemp °C"
-  if [[ $CPUTemp -gt $TEMP_AUTO ]]; then
+  if [[ -z $CPUTemp  ]]; then
+    echo "Can not get CPU Temp of $1. Skip"
+  elif [[ $CPUTemp -gt $TEMP_AUTO ]]; then
     SetFanAuto $1
   elif [[ $CPUTemp -gt $TEMP_8 ]]; then
     SetFanLevel $1 $FAN_9
